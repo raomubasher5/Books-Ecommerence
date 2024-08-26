@@ -14,7 +14,7 @@ const AdminDashboard = () => {
             <div className='pt-12'>
                 {/* Top */}
                 <div className="top mb-5 px-5 mt-5">
-                    <div className=" bg-blue-gray-50 py-5 border border-blue-gray-100 rounded-lg">
+                    <div className=" py-5 border border-blue-gray-100 rounded-lg">
                         <h1 className=" text-center text-2xl font-bold text-blue-gray-500">Admin Dashboard</h1>
                     </div>
                 </div>
@@ -23,10 +23,10 @@ const AdminDashboard = () => {
                     {/* Mid  */}
                     <div className="mid mb-5">
                         {/* main  */}
-                        <div className=" bg-blue-gray-50 py-5 rounded-xl border border-blue-gray-100">
+                        <div className="py-5 rounded-xl  ">
                             {/* image  */}
                             <div className="flex justify-center">
-                                <img src="https://cdn-icons-png.flaticon.com/128/2202/2202112.png" alt="" />
+                                {/* <img src="https://cdn-icons-png.flaticon.com/128/2202/2202112.png" alt="" /> */}
                             </div>
                             {/* text  */}
                             <div className="">
@@ -43,10 +43,7 @@ const AdminDashboard = () => {
                                 </h1>
 
                                 {/* Date  */}
-                                <h1 className=" text-center text-lg">
-                                    <span className=" font-bold">Date : </span>
-                                    {user.data}
-                                </h1>
+                              
 
                                 {/* Role  */}
                                 <h1 className=" text-center text-lg">
@@ -63,7 +60,7 @@ const AdminDashboard = () => {
                             <TabList className="flex flex-wrap -m-4 text-center justify-center">
                                 {/* Total Products */}
                                 <Tab className="p-4 md:w-1/3 sm:w-1/2 w-full cursor-pointer">
-                                    <div className=" border bg-blue-gray-50 hover:bg-blue-gray-100 border-blue-gray-100 px-4 py-3 rounded-xl" >
+                                    <div className=" border  hover:bg-blue-gray-100 border-blue-gray-100 px-4 py-3 rounded-xl" >
                                         <div className="text-blue-gray-500 w-12 h-12 mb-3 inline-block" >
                                             <svg
                                                 xmlns="http://www.w3.org/2000/svg"
@@ -94,7 +91,7 @@ const AdminDashboard = () => {
 
                                 {/* Total Order  */}
                                 <Tab className="p-4 md:w-1/4 sm:w-1/2 w-full cursor-pointer">
-                                    <div className=" border bg-blue-gray-50 hover:bg-blue-gray-100 border-blue-gray-100 px-4 py-3 rounded-xl" >
+                                    <div className=" border  hover:bg-blue-gray-100 border-blue-gray-100 px-4 py-3 rounded-xl" >
                                         <div className="text-blue-gray-500 w-12 h-12 mb-3 inline-block" >
                                             <svg
                                                 xmlns="http://www.w3.org/2000/svg"
@@ -123,7 +120,7 @@ const AdminDashboard = () => {
 
                                 {/* Total User  */}
                                 <Tab className="p-4 md:w-1/3 sm:w-1/2 w-full cursor-pointer">
-                                    <div className=" border bg-blue-gray-50 hover:bg-blue-gray-100 border-blue-gray-100 px-4 py-3 rounded-xl" >
+                                    <div className=" border  hover:bg-blue-gray-100 border-blue-gray-100 px-4 py-3 rounded-xl" >
                                         <div className="text-blue-gray-500 w-12 h-12 mb-3 inline-block" >
                                             <svg
                                                 xmlns="http://www.w3.org/2000/svg"
@@ -144,7 +141,7 @@ const AdminDashboard = () => {
                                             </svg>
 
                                         </div>
-                                        <h2 className="title-font font-medium text-3xl text-blue-gray-400 fonts1" >{getAllUser.length}</h2>
+                                        <h2 className="title-font font-medium text-3xl text-blue-gray-00 fonts1" >{getAllUser.length}</h2>
                                         <p className=" text-blue-gray-500  font-bold" >Total User</p>
                                     </div>
                                 </Tab>

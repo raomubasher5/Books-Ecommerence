@@ -1,24 +1,24 @@
 import React, { useEffect, useState } from 'react'
 import Layout from '../../components/layout/Layout'
 import { BiTrash } from 'react-icons/bi'
-import img from '../../assets/bag_3.png'
 import { useDispatch, useSelector } from 'react-redux'
 import { addToCart, decrementQuantity, deleteFromCart, incrementQuantity } from '../../redux/cartSlice'
 import { toast } from 'react-toastify'
 import { useMyContext } from '../../context/MyContext'
 import BuyNowModal from '../../components/buyNowModal/BuyNowModal'
 import { addDoc, collection, Timestamp } from 'firebase/firestore'
-import { fireDB } from '../../firebase/firebaseCongif'
+import { fireDB, analytics, logEvent } from '../../firebase/firebaseCongif'
 import { Navigate } from 'react-router-dom'
+import shopCartImage from '../../assets/shop.png'
 
 const CartPage = () => {
-    const {user} = useMyContext();
+    const { user } = useMyContext();
     const [addressInfo, setAddressInfo] = useState({
         name: '',
         address: '',
         pincode: '',
         mobileNumber: '',
-        time: Timestamp.now(),
+        time: Timestamp.now().toDate().toISOString(),
         date: new Date().toLocaleString(
             'en-US',
             {
@@ -29,12 +29,12 @@ const CartPage = () => {
         )
     });
 
-    const buyNowFunction=()=>{
-        if(addressInfo.name === '' || addressInfo.address === '' , addressInfo.mobileNumber === "" , addressInfo.pincode === ''  ){
+    const buyNowFunction = () => {
+        if (addressInfo.name === '' || addressInfo.address === '', addressInfo.mobileNumber === "") {
             toast.error('Please fill all the details')
         }
 
-        const orderInfo ={
+        const orderInfo = {
             cartItems,
             addressInfo,
             email: user.email,
@@ -53,8 +53,14 @@ const CartPage = () => {
         }
 
         try {
-            const orderRef = collection(fireDB , 'order');
-            addDoc(orderRef , orderInfo);
+            const orderRef = collection(fireDB, 'order');
+            addDoc(orderRef, orderInfo);
+            logEvent(analytics, 'order_placed', {
+                order_id: `${user.uid}-${Timestamp.now().seconds}`,
+                total_amount: cartTotal,
+                item_count: cartItems.length,
+                address: addressInfo,
+            });
             setAddressInfo({
                 name: '',
                 address: '',
@@ -68,21 +74,19 @@ const CartPage = () => {
 
     }
 
-
-
-
     const cartItems = useSelector((state) => state.cart);
     const dispatch = useDispatch();
 
-    //add to cart function
-    const addCart = (item) => {
-        dispatch(addToCart(item));
-        toast.success('Added to Cart')
-    }
 
     //delete from cart function
     const deleteCart = (item) => {
         dispatch(deleteFromCart(item));
+        logEvent(analytics, 'remove_from_cart', {
+            item_name: item.title,
+            item_id: item.id,
+            price: item.price,
+            quantity: item.quantity,
+        });
         toast.success('Delete cart')
     }
 
@@ -95,8 +99,8 @@ const CartPage = () => {
     }
 
     //cart item total
-    const cartItemTotal = cartItems.map(item=>item.quantity).reduce((preValue , currValue)=>preValue + currValue , 0);
-    const cartTotal = cartItems.map((item=> item.price * item.quantity)).reduce((preValue , currValue)=> preValue +currValue , 0)
+    const cartItemTotal = cartItems.map(item => item.quantity).reduce((preValue, currValue) => preValue + currValue, 0);
+    const cartTotal = cartItems.map((item => item.price * item.quantity)).reduce((preValue, currValue) => preValue + currValue, 0)
 
 
     useEffect(() => {
@@ -105,18 +109,18 @@ const CartPage = () => {
 
     return (
         <Layout>
-            <div className="container mx-auto px-4 max-w-7xl lg:px-0 pt-12">
-                <div className="mx-auto max-w-2xl py-8 lg:max-w-7xl">
-                    <h1 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
-                        Shopping Cart
-                    </h1>
-                    <form className="mt-12 lg:grid lg:grid-cols-12 lg:items-start lg:gap-x-12 xl:gap-x-16">
-                        <section aria-labelledby="cart-heading" className="rounded-lg bg-white lg:col-span-8">
-                            <h2 id="cart-heading" className="sr-only">
-                                Items in your shopping cart
-                            </h2>
-                            <ul role="list" className="divide-y divide-gray-200">
-                                { cartItems.length >0 ?
+            {/* <div className="container mx-auto px-4 max-w-7xl lg:px-0 pt-12"> */}
+            <div className="mx-auto max-w-2xl py-8 lg:max-w-7xl pt-20 ml-12">
+                <h1 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
+                    Shopping Cart
+                </h1>
+                {cartItems.length > 0 ? <form className="mt-12 lg:grid lg:grid-cols-12 lg:items-start lg:gap-x-12 xl:gap-x-16">
+                    <section aria-labelledby="cart-heading" className="rounded-lg bg-white lg:col-span-8">
+                        <h2 id="cart-heading" className="sr-only">
+                            Items in your shopping cart
+                        </h2>
+                        <ul role="list" className="divide-y divide-gray-200">
+                            {cartItems.length > 0 ?
                                 cartItems.map((item, index) => (
                                     <div key={index} className="">
                                         <li className="flex py-6 sm:py-6 ">
@@ -150,83 +154,87 @@ const CartPage = () => {
                                                 </div>
                                             </div>
                                         </li>
-                                        <div className="mb-2 flex">
+                                        <div className="mb-2 flex ml-4" >
                                             <div className="min-w-24 flex">
-                                                <button onClick={()=>handleDecrement(item.id)} type="button" className="h-7 w-7" >
+                                                <button onClick={() => handleDecrement(item.id)} type="button" className="h-7 w-7" >
                                                     -
                                                 </button>
                                                 <input
                                                     type="text"
                                                     className="mx-1 h-7 w-9 rounded-md border text-center"
                                                     value={item.quantity}
-                                                    onChange={()=>{}}
+                                                    onChange={() => { }}
                                                 />
-                                                <button onClick={()=>handleIncrement(item.id)} type="button" className="flex h-7 w-7 items-center justify-center">
+                                                <button onClick={() => handleIncrement(item.id)} type="button" className="flex h-7 w-7 items-center justify-center">
                                                     +
                                                 </button>
                                             </div>
                                             <div className="ml-6 flex text-sm">
-                                                <button onClick={()=> deleteCart(item)} type="button" className="flex items-center space-x-1 px-2 py-1 pl-0">
-                                                    <BiTrash size={12} className="text-red-500" />
-                                                    <span className="text-xs font-medium text-red-500">Remove</span>
+                                                <button onClick={() => deleteCart(item)} type="button" className="flex items-center space-x-1 px-2 py-1 pl-0">
+                                                    <BiTrash className="text-red-500 text-xl" />
+                                                    <span className="font-medium text-red-500 text-md">Remove</span>
                                                 </button>
                                             </div>
                                         </div>
                                     </div>
                                 ))
-                               :
+                                :
                                 <h1>No Item</h1>
-                               }
+                            }
+                        </ul>
+                    </section>
 
 
-
-
-                            </ul>
-                        </section>
-                        {/* Order summary */}
-                        <section
-                            aria-labelledby="summary-heading"
-                            className="mt-16 mr-12 rounded-md bg-white lg:col-span-4 lg:mt-0 lg:p-0"
+                    <section
+                        aria-labelledby="summary-heading"
+                        className="mt-16 mr-12 rounded-md bg-white lg:col-span-4 lg:mt-0 lg:p-0"
+                    >
+                        <h2
+                            id="summary-heading"
+                            className=" border-b border-gray-200 px-4 py-3 text-lg font-medium text-gray-900 sm:p-4"
                         >
-                            <h2
-                                id="summary-heading"
-                                className=" border-b border-gray-200 px-4 py-3 text-lg font-medium text-gray-900 sm:p-4"
-                            >
-                                Price Details
-                            </h2>
-                            <div>
-                                <dl className=" space-y-1 px-2 py-4">
-                                    <div className="flex items-center justify-between">
-                                        <dt className="text-sm text-gray-800">Price ({cartItemTotal}) items</dt>
-                                        <dd className="text-sm font-medium text-gray-900">₹ {cartTotal}</dd>
-                                    </div>
-                                    <div className="flex items-center justify-between py-4">
-                                        <dt className="flex text-sm text-gray-800">
-                                            <span>Delivery Charges</span>
-                                        </dt>
-                                        <dd className="text-sm font-medium text-green-700">Free</dd>
-                                    </div>
-                                    <div className="flex items-center justify-between border-y border-dashed py-4 ">
-                                        <dt className="text-base font-medium text-gray-900">Total Amount</dt>
-                                        <dd className="text-base font-medium text-gray-900">PKR {cartTotal}</dd>
-                                    </div>
-                                </dl>
-                                <div className="px-2 pb-4 font-medium text-green-700">
-                                    <div className="flex gap-4 mb-6">
-                                        {user
-                                            ? <BuyNowModal
-                                                addressInfo={addressInfo}
-                                                setAddressInfo={setAddressInfo}
-                                                buyNowFunction={buyNowFunction}
-                                            /> : <Navigate to={'/login'}/>
-                                        }
-                                    </div>
+                            Price Details
+                        </h2>
+                        <div>
+                            <dl className=" space-y-1 px-2 py-4">
+                                <div className="flex items-center justify-between">
+                                    <dt className="text-sm text-gray-800">Price ({cartItemTotal}) items</dt>
+                                    <dd className="text-sm font-medium text-gray-900">{cartTotal}$</dd>
+                                </div>
+                                <div className="flex items-center justify-between py-4">
+                                    <dt className="flex text-sm text-gray-800">
+                                        <span>Delivery Charges</span>
+                                    </dt>
+                                    <dd className="text-sm font-medium text-green-700">Free</dd>
+                                </div>
+                                <div className="flex items-center justify-between border-y border-dashed py-4 ">
+                                    <dt className="text-base font-medium text-gray-900">Total Amount</dt>
+                                    <dd className="text-base font-medium text-gray-900">{cartTotal} $</dd>
+                                </div>
+                            </dl>
+                            <div className="px-2 pb-4 font-medium text-green-700">
+                                <div className="flex gap-4 mb-6">
+                                    {user
+                                        ? <BuyNowModal
+                                            addressInfo={addressInfo}
+                                            setAddressInfo={setAddressInfo}
+                                            buyNowFunction={buyNowFunction}
+                                        /> : <Navigate to={'/login'} />
+                                    }
                                 </div>
                             </div>
-                        </section>
-                    </form>
-                </div>
+                        </div>
+                    </section>
+                </form> :
+                    <>
+                    <div className='w-full mx-auto'>
+                        <img src={shopCartImage} alt="Schoping Cart image" className='w-[30%] mx-auto'  />
+                        <div className='text-center md:text-3xl text-xl font-bold' >Shoping Cart is Empty</div>
+                    </div>
+                    </>
+                }
             </div>
+
         </Layout>
     )
 }

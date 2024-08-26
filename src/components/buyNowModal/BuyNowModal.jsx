@@ -14,7 +14,7 @@ const BuyNowModal = ({ addressInfo, setAddressInfo, buyNowFunction }) => {
             <Button
                 type="button"
                 onClick={handleOpen}
-                className="w-full px-4 py-3 text-center text-gray-100 bg-blue-gray-600 border border-transparent dark:border-gray-700 hover:border-blue-gray-500 hover:text-blue-gray-700 hover:bg-blue-gray-100 rounded-xl"
+                className="w-full px-4 py-3 text-center text-gray-100 bg-green-600 border border-transparent dark:border-green-700 hover:border-green-500 hover:text-green-700 hover:bg-green-100 rounded-xl"
             >
                 Buy now
             </Button>
@@ -50,7 +50,7 @@ const BuyNowModal = ({ addressInfo, setAddressInfo, buyNowFunction }) => {
                             className='bg-blue-gray-50 border border-blue-gray-200 px-2 py-2 w-full rounded-md outline-none text-blue-gray-600 placeholder-blue-gray-300'
                         />
                     </div>
-
+                    {/* 
                     <div className="mb-3">
                         <input
                             type="number"
@@ -65,7 +65,7 @@ const BuyNowModal = ({ addressInfo, setAddressInfo, buyNowFunction }) => {
                             placeholder='Enter your pincode'
                             className='bg-blue-gray-50 border border-blue-gray-200 px-2 py-2 w-full rounded-md outline-none text-blue-gray-600 placeholder-blue-gray-300'
                         />
-                    </div>
+                    </div> */}
 
                     <div className="mb-3">
                         <input
@@ -83,10 +83,10 @@ const BuyNowModal = ({ addressInfo, setAddressInfo, buyNowFunction }) => {
                         />
                     </div>
 
-                    <div className="">
+                    <div>
                         <Button
                             type="button"
-                            onClick={()=>{
+                            onClick={() => {
                                 handleOpen();
                                 buyNowFunction();
                             }}

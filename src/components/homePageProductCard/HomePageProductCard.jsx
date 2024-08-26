@@ -1,11 +1,12 @@
 import React, { useEffect } from 'react'
-import img from '../../assets/bag_1.png'
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { useMyContext } from '../../context/MyContext';
 import Loader from '../loader/Loader';
 import { useDispatch, useSelector } from 'react-redux';
 import { addToCart, deleteFromCart } from '../../redux/cartSlice';
 import { toast } from 'react-toastify';
+import { logEvent } from 'firebase/analytics';
+import { analytics } from '../../firebase/firebaseCongif';
 
 const HomePageProductCard = () => {
     const navigate = useNavigate();
@@ -17,12 +18,24 @@ const HomePageProductCard = () => {
     //add to cart function
     const addCart = (item) => {
         dispatch(addToCart(item));
+        logEvent(analytics, 'add_to_cart', {
+            item_name: item.title,
+            item_id: item.id,
+            price: item.price,
+            quantity: item.quantity,
+          });
         toast.success('Added to Cart')
     }
-
+    
     //delete from cart function
     const deleteCart = (item)=>{
         dispatch(deleteFromCart(item));
+        logEvent(analytics, 'remove_from_cart', {
+            item_name: item.title,
+            item_id: item.id,
+            price: item.price,
+            quantity: item.quantity,
+          });
         toast.success('Delete cart')
     }
 
@@ -36,7 +49,7 @@ const HomePageProductCard = () => {
             <div className="mt-10">
                 {/* Heading  */}
                 <div className="">
-                    <h1 className=" text-center mb-5 text-2xl font-semibold">Bestselling Products</h1>
+                    <h1 className=" text-center mb-5 text-2xl font-semibold">Best Selling Products</h1>
                 </div>
 
                 {/* main 1 */}
@@ -59,13 +72,13 @@ const HomePageProductCard = () => {
                                         />
                                         <div className="p-6">
                                             <h2 className="tracking-widest text-xs title-font font-medium text-gray-400 mb-1">
-                                                E-Pakistan
+                                                MvBlack
                                             </h2>
                                             <h1 className="title-font text-lg font-medium text-gray-900 mb-3">
                                                 {item.title.substring(0, 25)}
                                             </h1>
                                             <h1 className="title-font text-lg font-medium text-gray-900 mb-3">
-                                                {item.price}
+                                                {item.price} $
                                             </h1>
 
                                             <div className="flex justify-center">
@@ -76,9 +89,9 @@ const HomePageProductCard = () => {
                                                         e.stopPropagation();
                                                         deleteCart(item);
                                                     }}
-                                                    className="bg-red-700 hover:bg-pink-600 w-full text-white py-[4px] rounded-lg font-bold"
+                                                    className="bg-red-500 hover:bg-red-600 w-full text-white py-[4px] rounded-lg font-bold"
                                                 >
-                                                    Delete to Cart
+                                                    Remove from Cart
                                                 </button>
                                                 : 
                                                 <button
@@ -86,7 +99,7 @@ const HomePageProductCard = () => {
                                                         e.stopPropagation();
                                                         addCart(item);
                                                     }}
-                                                    className="bg-red-700 hover:bg-pink-600 w-full text-white py-[4px] rounded-lg font-bold"
+                                                    className="bg-red-500 hover:bg-red-600 w-full text-white py-[4px] rounded-lg font-bold"
                                                 >
                                                     Add to Cart
                                                 </button>
@@ -98,7 +111,7 @@ const HomePageProductCard = () => {
                                 </div>
                             ))}
                         </div>
-
+                            <div className='text-center text-xl mt-12 cursor-pointer'><Link to={'/all-products'} className='bg-red-500 hover:bg-red-600 py-2 px-3 rounded-lg text-white'>View all Products</Link></div>
                     </div>
                 </section>
             </div>

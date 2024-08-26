@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { useMyContext } from '../../context/MyContext';
 import { toast } from 'react-toastify';
 import Loader from '../../components/loader/Loader';
-import { fireDB } from '../../firebase/firebaseCongif';
+import { analytics, fireDB, logEvent } from '../../firebase/firebaseCongif';
 import Layout from '../../components/layout/Layout';
 
 
@@ -40,7 +40,7 @@ const AddProductPage = () => {
     title: "",
     price: "",
     productImageUrl: "",
-    category: "",
+    // category: "",
     description: "",
     quantity: 1,
     time: Timestamp.now(),
@@ -65,6 +65,11 @@ const AddProductPage = () => {
       const productRef = collection(fireDB, 'products');
       await addDoc(productRef, product)
       toast.success("Add product successfully");
+      logEvent(analytics, 'add_to_cart', {
+        title: product.title,
+        price: product.price,
+        category: product.category
+      });
       navigate('/admin-dashboard')
       setLoading(false)
     } catch (error) {
@@ -77,120 +82,118 @@ const AddProductPage = () => {
 
   return (
     <Layout>
-    {loading && <Loader/>}
-      <div>
-        <div className='flex justify-center items-center h-screen'>
-          {loading && <Loader />}
-          {/* Login Form  */}
-          <div className="login_Form bg-blue-gray-50 px-8 py-6 border border-blue-gray-100 rounded-xl shadow-md">
+    {loading && <Loader />}
+    <div className="flex justify-center items-center h-screen">
+      {loading && <Loader />}
+      {/* Login Form  */}
+      <div className="login_Form  px-8 py-6 border border-blue-gray-100 rounded-xl shadow-md  md:w-[40%]  ">
 
-            {/* Top Heading  */}
-            <div className="mb-5">
-              <h2 className='text-center text-2xl font-bold text-blue-gray-500 '>
-                Add Product
-              </h2>
-            </div>
+        {/* Top Heading  */}
+        <div className="mb-5">
+          <h2 className='text-center text-2xl font-bold  '>
+            Add Product
+          </h2>
+        </div>
 
-            {/* Input One  */}
-            <div className="mb-3">
-              <input
-                type="text"
-                name="title"
-                value={product.title}
-                onChange={(e) => {
-                  setProduct({
-                    ...product,
-                    title: e.target.value
-                  })
-                }}
-                placeholder='Product Title'
-                className='bg-blue-gray-50 border text-blue-gray-300 border-blue-gray-200 px-2 py-2 w-96 rounded-md outline-none placeholder-blue-gray-300'
-              />
-            </div>
+        {/* Input One  */}
+        <div className="mb-3">
+          <input
+            type="text"
+            name="title"
+            value={product.title}
+            onChange={(e) => {
+              setProduct({
+                ...product,
+                title: e.target.value
+              })
+            }}
+            placeholder='Product Title'
+            className=' border   border-blue-gray-200 px-2 py-2 w-full rounded-md outline-none placeholder-blue-gray-300'
+          />
+        </div>
 
-            {/* Input Two  */}
-            <div className="mb-3">
-              <input
-                type="number"
-                name="price"
-                value={product.price}
-                onChange={(e) => {
-                  setProduct({
-                    ...product,
-                    price: e.target.value
-                  })
-                }}
-                placeholder='Product Price'
-                className='bg-blue-gray-50 border text-blue-gray-300 border-blue-gray-200 px-2 py-2 w-96 rounded-md outline-none placeholder-blue-gray-300'
-              />
-            </div>
+        {/* Input Two  */}
+        <div className="mb-3">
+          <input
+            type="number"
+            name="price"
+            value={product.price}
+            onChange={(e) => {
+              setProduct({
+                ...product,
+                price: e.target.value
+              })
+            }}
+            placeholder='Product Price'
+            className='border   border-blue-gray-200 px-2 py-2 w-full rounded-md outline-none placeholder-blue-gray-300'
+          />
+        </div>
 
-            {/* Input Three  */}
-            <div className="mb-3">
-              <input
-                type="text"
-                name="productImageUrl"
-                value={product.productImageUrl}
-                onChange={(e) => {
-                  setProduct({
-                    ...product,
-                    productImageUrl: e.target.value
-                  })
-                }}
-                placeholder='Product Image Url'
-                className='bg-blue-gray-50 border text-blue-gray-300 border-blue-gray-200 px-2 py-2 w-96 rounded-md outline-none placeholder-blue-gray-300'
-              />
-            </div>
+        {/* Input Three  */}
+        <div className="mb-3">
+          <input
+            type="text"
+            name="productImageUrl"
+            value={product.productImageUrl}
+            onChange={(e) => {
+              setProduct({
+                ...product,
+                productImageUrl: e.target.value
+              })
+            }}
+            placeholder='Product Image Url'
+            className=' border   border-blue-gray-200 px-2 py-2 w-full rounded-md outline-none placeholder-blue-gray-300'
+          />
+        </div>
 
-            {/* Input Four  */}
-            <div className="mb-3">
-              <select
-                value={product.category}
-                onChange={(e) => {
-                  setProduct({
-                    ...product,
-                    category: e.target.value
-                  })
-                }}
-                className="w-full px-1 py-2 text-blue-gray-300 bg-blue-gray-50 border border-blue-gray-200 rounded-md outline-none  ">
-                <option disabled>Select Product Category</option>
-                {categoryList.map((value, index) => {
-                  const { name } = value
-                  return (
-                    <option className=" first-letter:uppercase" key={index} value={name}>{name}</option>
-                  )
-                })}
-              </select>
-            </div>
+        {/* Input Four  */}
+        {/* <div className="mb-3">
+          <select
+            value={product.category}
+            onChange={(e) => {
+              setProduct({
+                ...product,
+                category: e.target.value
+              })
+            }}
+            className="w-full px-1 py-2   bg-blue-gray-50 border border-blue-gray-200 rounded-md outline-none  ">
+            <option disabled>Select Product Category</option>
+            {categoryList.map((value, index) => {
+              const { name } = value
+              return (
+                <option className=" first-letter:uppercase" key={index} value={name}>{name}</option>
+              )
+            })}
+          </select>
+        </div> */}
 
-            {/* Input Five  */}
-            <div className="mb-3">
-              <textarea
-                value={product.description}
-                onChange={(e) => {
-                  setProduct({
-                    ...product,
-                    description: e.target.value
-                  })
-                }} name="description" placeholder="Product Description" rows="5" className=" w-full px-2 py-1 text-blue-gray-300 bg-blue-gray-50 border border-blue-gray-200 rounded-md outline-none placeholder-blue-gray-300 ">
+        {/* Input Five  */}
+        <div className="mb-3">
+          <textarea
+            value={product.description}
+            onChange={(e) => {
+              setProduct({
+                ...product,
+                description: e.target.value
+              })
+            }} name="description" placeholder="Product Description" rows="5" className=" w-full px-2 py-1    border border-blue-gray-200 rounded-md outline-none placeholder-blue-gray-300 ">
 
-              </textarea>
-            </div>
+          </textarea>
+        </div>
 
-            {/* Add Product Button  */}
-            <div className="mb-3">
-              <button
-                onClick={addProductFunction}
-                type='button'
-                className='bg-blue-gray-500 hover:bg-blue-gray-600 w-full text-white text-center py-2 font-bold rounded-md '
-              >
-                Add Product
-              </button>
-            </div>
-          </div>
+        {/* Add Product Button  */}
+        <div className="mb-3">
+          <button
+            onClick={addProductFunction}
+            type='button'
+            className='bg-green-500 hover:bg-green-600 w-full text-white text-center py-2 font-bold rounded-md '
+          >
+            Add Product
+          </button>
         </div>
       </div>
-    </Layout>
+    </div>
+  </Layout>
   )
 }
 

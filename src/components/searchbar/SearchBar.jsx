@@ -1,20 +1,38 @@
-import React, { useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom';
 import { useMyContext } from '../../context/MyContext';
+import { logEvent } from 'firebase/analytics';
+import { analytics } from '../../firebase/firebaseCongif';
 
 const SearchBar = () => {
     const [query, setQuery] = useState('');
-    const [product, setProduct] = useState();
     const { getAllProducts } = useMyContext();
+    const searchRef = useRef(null);
 
     const filterSearchData = getAllProducts.filter((obj) => obj.title.toLowerCase().includes(query)).slice(0, 8);
 
     const navigate = useNavigate();
     const handleOnChange = (e) => {
-        setQuery(e.target.value)
+        const searchQuery = e.target.value;
+        setQuery(searchQuery);
+        logEvent(analytics, 'search_query', {
+          query: searchQuery,
+        });
+      };
+
+const handleClickOutside = (event) => {
+    if (searchRef.current && !searchRef.current.contains(event.target)) {
+      setQuery('');
     }
+  };
 
-
+  useEffect(() => {
+    document.addEventListener('click', handleClickOutside);
+    return () => {
+      document.removeEventListener('click', handleClickOutside);
+    };
+  }, []);
+      
 
     return (
         <>
@@ -30,14 +48,14 @@ const SearchBar = () => {
 
                 </div>
 
-                <div className=" flex justify-center">
-                    {query && <div className="block absolute bg-white shadow-lg w-96 md:w-96 lg:w-96 z-50 my-1 rounded-lg px-2 py-2">
+                <div ref={searchRef} className=" flex justify-center">
+                    {query && <div className="block absolute bg-white shadow-lg w-96 md:w-96 lg:w-96 z-50 my-1 rounded-lg px-2 py-2 h-[220px] overflow-y-scroll">
                         {filterSearchData.length > 0 ?
                             <>
                                 {filterSearchData.map((item, index) => {
                                     return (
                                         <div key={index} className="py-2 px-2 cursor-pointer"
-                                            onClick={() => navigate(`/product-info/${item.id}`)}>
+                                            onClick={() => {navigate(`/product-info/${item.id}`); setQuery('')}}>
                                             <div className="flex items-center gap-2">
                                                 <img className="w-10" src={item.productImageUrl} alt="" />
                                                 {item.title}

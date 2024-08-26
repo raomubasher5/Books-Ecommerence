@@ -1,6 +1,5 @@
 import React, { useEffect } from 'react'
 import Layout from '../../components/layout/Layout'
-import img from '../../assets/bag_1.png'
 import ProductCard from '../../components/ProductCard/ProductCard'
 import { useDispatch, useSelector } from 'react-redux'
 import { addToCart, deleteFromCart } from '../../redux/cartSlice'

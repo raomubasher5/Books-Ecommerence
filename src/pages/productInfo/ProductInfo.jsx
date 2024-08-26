@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from 'react'
 import Layout from "../../components/layout/Layout";
-import img from '../../assets/bag_1.png'
 import { useParams } from 'react-router-dom';
 import { useMyContext } from '../../context/MyContext';
 import { doc, getDoc, setDoc, Timestamp } from 'firebase/firestore';
-import { fireDB } from '../../firebase/firebaseCongif';
+import { analytics, fireDB, logEvent } from '../../firebase/firebaseCongif';
 import Loader from '../../components/loader/Loader';
 import { useDispatch, useSelector } from 'react-redux';
 import { addToCart, deleteFromCart } from '../../redux/cartSlice';
@@ -36,12 +35,24 @@ const ProductInfo = () => {
   //add to cart function
   const addCart = (item) => {
     dispatch(addToCart(item));
+    logEvent(analytics, 'add_to_cart', {
+      item_name: item.title,
+      item_id: item.id,
+      price: item.price,
+      quantity: item.quantity,
+  });
     toast.success('Added to Cart')
   }
 
   //delete from cart function
   const deleteCart = (item) => {
     dispatch(deleteFromCart(item));
+    logEvent(analytics, 'remove_from_cart', {
+      item_name: item.title,
+      item_id: item.id,
+      price: item.price,
+      quantity: item.quantity,
+  });
     toast.success('Delete cart')
   }
 
@@ -153,7 +164,7 @@ const ProductInfo = () => {
                       </ul>
                     </div>
                     <p className="inline-block text-2xl font-semibold text-gray-700 dark:text-gray-400 ">
-                      <span>{product.price}</span>
+                      <span>{product.price} $</span>
                     </p>
                   </div>
                   <div className="mb-6">
@@ -172,9 +183,9 @@ const ProductInfo = () => {
                           e.stopPropagation();
                           deleteCart(product);
                         }}
-                        className="bg-red-700 hover:bg-pink-600 w-full text-white py-[4px] rounded-lg font-bold"
+                        className="bg-red-500 hover:bg-red-600 w-full text-white py-[4px] rounded-lg font-bold"
                       >
-                        Delete to Cart
+                        Remove from Cart
                       </button>
                       :
                       <button
@@ -182,7 +193,7 @@ const ProductInfo = () => {
                           e.stopPropagation();
                           addCart(product);
                         }}
-                        className="bg-red-700 hover:bg-pink-600 w-full text-white py-[4px] rounded-lg font-bold"
+                        className="bg-red-500 hover:bg-red-600 w-full text-white py-[4px] rounded-lg font-bold"
                       >
                         Add to Cart
                       </button>

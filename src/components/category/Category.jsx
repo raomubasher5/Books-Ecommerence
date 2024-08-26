@@ -1,39 +1,42 @@
 import React from 'react'
 import img from '../../assets/categorys/watch.png'
 import { useNavigate } from 'react-router-dom'
+import fiction from "../../assets/fiction.jpg"
 
 const category = [
   {
-    image: 'https://cdn-icons-png.flaticon.com/256/4359/4359963.png',
-    name: 'fashion'
+    image: 'https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcQ1GVpHCSh-tGAxKIZIjis9BxmN-dV-C8KWdvxCSEpBZCVPLxol',
+    // image: 'https://cdn-icons-png.flaticon.com/256/4359/4359963.png',
+    name: 'Fiction'
   },
   {
-    image: 'https://cdn-icons-png.flaticon.com/256/11833/11833323.png',
-    name: 'shirt'
+    // image: 'https://cdn-icons-png.flaticon.com/256/11833/11833323.png',
+    image: fiction,
+    name: 'Non-Fiction'
   },
   {
     image: 'https://cdn-icons-png.flaticon.com/256/8174/8174424.png',
-    name: 'bag'
+    name: 'Children’s Books'
   },
   {
     image: 'https://cdn-icons-png.flaticon.com/256/7648/7648246.png',
-    name: 'mobile'
+    name: 'Mystery & Thriller'
   },
   {
     image: 'https://cdn-icons-png.flaticon.com/256/12142/12142416.png',
-    name: 'laptop'
+    name: 'Romance'
   },
   {
     image: 'https://cdn-icons-png.flaticon.com/256/10686/10686553.png',
-    name: 'shoes'
+    name: 'Science Fiction & Fantasy'
   },
   {
     image: 'https://cdn-icons-png.flaticon.com/256/12114/12114279.png',
-    name: 'home'
+    name: 'History'
   },
   {
     image: 'https://cdn-icons-png.flaticon.com/256/11946/11946316.png',
-    name: 'books'
+    name: 'Travel'
   }
 ]
 
@@ -53,7 +56,7 @@ const Category = () => {
               {category.map((item, index) => {
                 return (
                   <div key={index} onClick={() => navigate(`/category/${item.name}`)} className="flex flex-col cursor-pointer items-center border border-gray-300 rounded-full h-40 w-40 hover:shadow-lg ">
-                    <img src={item.image} alt="Laptops" className="m-2 object-cover" />
+                    <img src={item.image} alt="Laptops" className="m-2 object-cover w-full" />
                     <span className='font-bold'>{item.name}</span>
                   </div>
                 )
